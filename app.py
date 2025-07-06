@@ -461,16 +461,29 @@ def send_telegram_notification(scan_results):
             if not isinstance(df, pd.DataFrame) or df.empty:
                 continue
 
-            # ✅ MACD: Only bullish crossover signals
-            if "MACD" in scanner_name and "Signal_Type" in df.columns:
-                bullish_df = df[df["Signal_Type"].astype(str).str.contains("Bullish Crossover", case=False, na=False)]
-                if not bullish_df.empty:
-                    timeframe = scanner_name.split()[-1]  # 15min, 4h, 1d
-                    sec, btns = format_section(f"MACD {timeframe.upper()} Bullish Crossover", bullish_df)
-                    if sec:
-                        sections.append(sec)
-                        all_buttons.extend(btns)
 
+
+            if "MACD" in scanner_name:
+    # Normalize signal_type presence
+                if "Signal_Type" in df.columns:
+                    bullish_df = df[df["Signal_Type"].astype(str).str.contains("Bullish Crossover", case=False, na=False)]
+                    if not bullish_df.empty:
+            # Fix MACD 1d label issue
+                        if "1d" in scanner_name.lower():
+                            label = "1D"
+                        elif "4h" in scanner_name.lower():
+                            label = "4H"
+                        elif "15" in scanner_name.lower():
+                            label = "15M"
+                else:
+                    label = scanner_name.split()[-1].upper()
+
+                sec, btns = format_section(f"MACD {label} Bullish Crossover", bullish_df)
+                if sec:
+                    sections.append(sec)
+                    all_buttons.extend(btns)
+            
+            
             # ✅ Range Breakout 4h: Include entire dataframe
             elif scanner_name == "Range Breakout 4h":
                 sec, btns = format_section("Range Breakout 4H", df)
