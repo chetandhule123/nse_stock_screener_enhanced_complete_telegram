@@ -469,7 +469,7 @@ def send_telegram_notification(scan_results):
                     sec, btns = format_section(f"MACD {timeframe.upper()} Bullish Crossover", bullish_df)
                     if sec:
                         sections.append(sec)
-                    all_buttons.extend(btns)
+                        all_buttons.extend(btns)
 
             # ✅ Range Breakout 4h: Include entire dataframe
             elif scanner_name == "Range Breakout 4h":
