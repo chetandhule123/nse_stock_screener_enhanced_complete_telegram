@@ -463,7 +463,7 @@ def send_telegram_notification(scan_results):
 
             # ✅ MACD: Only bullish crossover signals
             if "MACD" in scanner_name and "Signal_Type" in df.columns:
-                bullish_df = df[df["Signal_Type"].astype(str).str.contains("bullish", case=False, na=False)]
+                bullish_df = df[df["Signal_Type"].astype(str).str.contains("Bullish Crossover", case=False, na=False)]
                 if not bullish_df.empty:
                     timeframe = scanner_name.split()[-1]  # 15min, 4h, 1d
                     sec, btns = format_section(f"MACD {timeframe.upper()} Bullish Crossover", bullish_df)
