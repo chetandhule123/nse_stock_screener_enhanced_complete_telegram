@@ -53,6 +53,7 @@ def initialize_session_state():
     """Initialize all session state variables"""
     defaults = {
         'last_scan_time': None,
+        'last_telegram_time': None,
         'scan_results': {},
         'auto_scan_enabled': True,
         'scan_interval': 15,  # Fixed 15-minute intervals
@@ -168,7 +169,8 @@ def execute_scan_cycle():
         
     except Exception as e:
         logger.error(f"Scan cycle error: {e}")
-        return False
+        return False, {}
+    return True, results
 
 def show_auto_refresh_countdown():
     """Display auto-refresh countdown timer with browser-level refresh"""
@@ -654,6 +656,30 @@ def main():
         with st.spinner("🔄 Running automated scan..."):
             execute_scan_cycle()
         st.rerun()
+
+    if should_run_auto_scan():
+        with st.spinner("🔄 Running automated scan..."):
+            success, results = execute_scan_cycle()
+        
+            if success:
+                now = get_ist_time()
+                if (
+                    st.session_state.notification_enabled and
+                    (st.session_state.last_telegram_time is None or 
+                     now - st.session_state.last_telegram_time >= timedelta(minutes=15))
+                ):
+                    try:
+                        sent = send_telegram_notification(results)
+                        if sent:
+                            st.session_state.last_telegram_time = now
+                            logger.info("Telegram message sent after successful auto-scan.")
+                    except Exception as e:
+                        logger.error(f"Telegram notification failed: {e}")
+            else:
+                logger.warning("Auto-scan failed. Telegram not sent.")
+        
+        st.rerun()
+
     
     # Main content area
     col1, col2 = st.columns([3, 1])
