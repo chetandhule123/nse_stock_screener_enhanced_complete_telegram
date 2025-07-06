@@ -454,6 +454,48 @@ def send_telegram_notification(scan_results):
         sections = []
         all_buttons = []
 
+
+
+
+        for scanner_name, df in scan_results.items():
+            if not isinstance(df, pd.DataFrame) or df.empty:
+                continue
+
+            # ✅ MACD: Only bullish crossover signals
+            if "MACD" in scanner_name and "Signal_Type" in df.columns:
+                bullish_df = df[df["Signal_Type"].astype(str).str.contains("bullish", case=False, na=False)]
+                if not bullish_df.empty:
+                    timeframe = scanner_name.split()[-1]  # 15min, 4h, 1d
+                    sec, btns = format_section(f"MACD {timeframe.upper()} Bullish Crossover", bullish_df)
+                    if sec:
+                        sections.append(sec)
+                    all_buttons.extend(btns)
+
+            # ✅ Range Breakout 4h: Include entire dataframe
+            elif scanner_name == "Range Breakout 4h":
+                sec, btns = format_section("Range Breakout 4H", df)
+                if sec:
+                    sections.append(sec)
+                    all_buttons.extend(btns)
+
+            # ✅ Resistance Breakout 4h: Include entire dataframe
+            elif scanner_name == "Resistance Breakout 4h":
+                sec, btns = format_section("Resistance Breakout 4H", df)
+                if sec:
+                    sections.append(sec)
+                    all_buttons.extend(btns)
+
+            # ✅ Support Level 4h: Include entire dataframe
+            elif scanner_name == "Support Level 4h":
+                sec, btns = format_section("Support Level 4H", df)
+                if sec:
+                    sections.append(sec)
+                    all_buttons.extend(btns)
+
+
+
+        
+
         # Process each scanner type for bullish signals only
         for scanner_name, df in scan_results.items():
             if not isinstance(df, pd.DataFrame) or df.empty:
