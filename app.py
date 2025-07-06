@@ -496,53 +496,7 @@ def send_telegram_notification(scan_results):
 
         
 
-        # Process each scanner type for bullish signals only
-        for scanner_name, df in scan_results.items():
-            if not isinstance(df, pd.DataFrame) or df.empty:
-                continue
-                
-            # MACD scanners - filter for bullish crossovers
-            if "MACD" in scanner_name and "Signal_Type" in df.columns:
-                try:
-                    bullish_df = df[df["Signal_Type"].astype(str).str.contains("bullish", case=False, na=False)]
-                    if len(bullish_df) > 0:
-                        timeframe = scanner_name.split()[-1]  # Get 15min, 4h, or 1d
-                        sec, btns = format_section(f"MACD {timeframe.upper()} Bullish Crossover", bullish_df)
-                        if sec: 
-                            sections.append(sec)
-                            all_buttons.extend(btns)
-                except Exception:
-                    continue
-            
-            # Range Breakout - filter for bullish direction
-            elif "Range Breakout" in scanner_name and "Direction" in df.columns:
-                try:
-                    bullish_df = df[df["Direction"].astype(str).str.contains("bullish", case=False, na=False)]
-                    if len(bullish_df) > 0:
-                        sec, btns = format_section("Range Breakout 4H (Bullish)", bullish_df)
-                        if sec:
-                            sections.append(sec)
-                            all_buttons.extend(btns)
-                except Exception:
-                    continue
-            
-            # Resistance Breakout - filter for bullish signals near resistance
-            elif "Resistance Breakout" in scanner_name and "Distance_to_Resistance_%" in df.columns:
-                filtered_df = df[df["Distance_to_Resistance_%"] < 2]
-                if not filtered_df.empty:
-                    sec, btns = format_section("Resistance Breakout (Near Resistance <2%)", filtered_df)
-                    if sec:
-                        sections.append(sec)
-                        all_buttons.extend(btns)
-            
-            # Support Level - filter for signals near support
-            elif "Support Level" in scanner_name and "Distance_to_Support_%" in df.columns:
-                near_support_df = df[df["Distance_to_Support_%"] < 2]
-                if not near_support_df.empty:
-                    sec, btns = format_section("Support Level 4H (Near Support <2%)", near_support_df)
-                    if sec:
-                        sections.append(sec)
-                        all_buttons.extend(btns)
+ 
 
         # Final message
         if sections:
