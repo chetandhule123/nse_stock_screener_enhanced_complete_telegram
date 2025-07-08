@@ -488,22 +488,37 @@ def send_telegram_notification(scan_results):
 
 
 
-            if "MACD" in scanner_name:
-    # Normalize signal_type presence
-                if "Signal_Type" in df.columns:
-                    bullish_df = df[df["Signal_Type"].astype(str).str.contains("Bullish Crossover", case=False, na=False)]
-                    if not bullish_df.empty:
-            # Fix MACD 1d label issue
-                        if "1d" in scanner_name.lower():
-                            label = "1D"
-                        elif "4h" in scanner_name.lower():
-                            label = "4H"
-                        elif "15" in scanner_name.lower():
-                            label = "15M"
-                else:
-                    label = scanner_name.split()[-1].upper()
 
+
+
+
+
+
+            if "1d" in scanner_name.lower():
+                label = "1D"
+            elif "4h" in scanner_name.lower():
+                label = "4H"
+            elif "15" in scanner_name.lower():
+                label = "15M"
+            else:
+                label = scanner_name.split()[-1].upper()
+
+# detect column
+            if "Signal_Type" in df.columns:
+                bullish_df = df[df["Signal_Type"].astype(str).str.contains("Bullish Crossover", case=False, na=False)]
+            elif "Signal" in df.columns:
+                bullish_df = df[df["Signal"].astype(str).str.contains("Bullish Crossover", case=False, na=False)]
+            else:
+                bullish_df = pd.DataFrame()
+
+            if not bullish_df.empty:
                 sec, btns = format_section(f"MACD {label} Bullish Crossover", bullish_df)
+                sections.append(sec)
+                all_buttons.extend(btns)
+
+
+
+                
                 if sec:
                     sections.append(sec)
                     all_buttons.extend(btns)
