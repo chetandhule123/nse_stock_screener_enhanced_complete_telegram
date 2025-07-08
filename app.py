@@ -387,21 +387,33 @@ def display_scanner_results():
 
                 sorted_results = results.head(max_results)
 
-                                # ✅ Display bullet-style clickable symbol list like Telegram format
+                # ✅ Make Symbol column clickable and show full table
                 symbol_col = next((col for col in sorted_results.columns if col.lower() == "symbol"), None)
 
                 if symbol_col and not sorted_results.empty:
-                    st.markdown("#### 📈 Signals:")
-                    for _, row in sorted_results.iterrows():
-                        symbol = str(row[symbol_col]).strip().replace(".NS", "")
-                        if symbol and symbol.lower() != "nan":
-                            st.markdown(
-                                f"- [{symbol} 🔗](https://www.tradingview.com/chart/?symbol=NSE:{symbol})",
-                                unsafe_allow_html=True
-                            )
+                    # Copy to avoid modifying original
+                    display_df = sorted_results.copy()
+    
+                    # Make symbol column clickable
+                    display_df[symbol_col] = display_df[symbol_col].apply(
+                        lambda sym: f"[{sym}](https://www.tradingview.com/chart/?symbol=NSE:{sym})"
+                        if pd.notna(sym) else ""
+                    )
+    
+                    # Render full table with clickable Symbol column
+                    st.markdown(display_df.to_markdown(index=False), unsafe_allow_html=True)
                 else:
                     st.warning("No symbols to display.")
+                
 
+
+
+
+
+
+                
+
+      
 
 
 
