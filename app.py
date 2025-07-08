@@ -296,51 +296,48 @@ def run_manual_scan():
 def display_scanner_results():
     """Enhanced scanner results display with filtering and export"""
     st.markdown("### 🎯 Live Scanner Results")
-    
+
     if not st.session_state.scan_results:
         st.info("🔍 No scan data available. Run a manual scan or wait for auto-scan to complete.")
         return
-    
-    # Get scanners with data
+
+    # Filter scanners with data
     scanners_with_data = {
-        name: results for name, results in st.session_state.scan_results.items() 
+        name: results for name, results in st.session_state.scan_results.items()
         if isinstance(results, pd.DataFrame) and not results.empty
     }
-    
+
     if not scanners_with_data:
         st.info("📊 No signals found in recent scans. Market conditions may not meet current criteria.")
         return
-    
-    # Create tabs for each scanner with data
+
+    # Create tabs for each scanner
     tab_names = list(scanners_with_data.keys())
     tabs = st.tabs(tab_names)
-    
+
     for i, (scanner_name, results) in enumerate(scanners_with_data.items()):
         with tabs[i]:
             col1, col2, col3, col4 = st.columns([2, 1, 1, 1])
-            
+
             with col1:
                 st.write(f"**{scanner_name} Results**")
-                
+
             with col2:
-                # Sort options
                 sort_by = st.selectbox(
                     "Sort by",
                     options=results.columns.tolist(),
                     key=f"sort_{scanner_name}",
                     index=0
                 )
-                
+
             with col3:
-                # Sort order
                 ascending = st.selectbox(
                     "Order",
                     options=["Descending", "Ascending"],
                     key=f"order_{scanner_name}"
                 ) == "Ascending"
-                
+
             with col4:
-                # Max results
                 max_results = st.number_input(
                     "Show",
                     min_value=5,
@@ -349,33 +346,41 @@ def display_scanner_results():
                     step=5,
                     key=f"max_{scanner_name}"
                 )
-            
 
             try:
-    # Priority scanners
+                # Apply priority sorting for selected scanners
                 priority_scanners = ["MACD 15min", "MACD 4h", "MACD 1d", "Range Breakout 4h"]
-                if scanner_name in priority_scanners:
-                    signal_priority = ["Bullish Crossover", "Bullish Divergence"]
-                    breakout_priority = ["Bullish Breakout", "Range Breakout", "Resistance Breakout", "Support Breakout"]
+                signal_priority = ["Bullish Crossover", "Bullish Divergence"]
+                breakout_priority = ["Bullish Breakout", "Range Breakout", "Resistance Breakout", "Support Breakout"]
 
-        # Detect signal column
-                    signal_col = None
-                    for col in results.columns:
-                        if col.lower() in ["signal_type", "signal"]:
-                            signal_col = col
-                            break
+                if scanner_name in priority_scanners:
+                    # Detect the signal column dynamically
+                    signal_col = next(
+                        (col for col in results.columns if col.strip().lower() in ["signal_type", "signal"]),
+                        None
+                    )
 
                     if signal_col:
-                        results["Signal_Priority"] = results[signal_col].apply( lambda x: signal_priority.index(x) if x in signal_priority else len(signal_priority))
+                        results["Signal_Priority"] = results[signal_col].apply(
+                            lambda x: signal_priority.index(str(x).strip())
+                            if str(x).strip() in signal_priority else len(signal_priority)
+                        )
                     else:
                         results["Signal_Priority"] = len(signal_priority)
 
                     if "Breakout_Type" in results.columns:
-                        results["Breakout_Priority"] = results["Breakout_Type"].apply(lambda x: breakout_priority.index(x) if x in breakout_priority else len(breakout_priority))
+                        results["Breakout_Priority"] = results["Breakout_Type"].apply(
+                            lambda x: breakout_priority.index(str(x).strip())
+                            if str(x).strip() in breakout_priority else len(breakout_priority)
+                        )
                     else:
                         results["Breakout_Priority"] = len(breakout_priority)
 
-                    results = results.sort_values(by=["Signal_Priority", "Breakout_Priority", sort_by],ascending=[True, True, ascending])
+                    # Sort with priority
+                    results = results.sort_values(
+                        by=["Signal_Priority", "Breakout_Priority", sort_by],
+                        ascending=[True, True, ascending]
+                    )
                     results.drop(columns=["Signal_Priority", "Breakout_Priority"], inplace=True, errors='ignore')
                 else:
                     results = results.sort_values(by=sort_by, ascending=ascending)
@@ -392,9 +397,6 @@ def display_scanner_results():
 
             except Exception as e:
                 st.error(f"Error displaying {scanner_name} results: {e}")
-
-
-
 
 
 def display_market_indices():
