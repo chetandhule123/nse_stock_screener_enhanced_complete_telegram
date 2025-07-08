@@ -359,7 +359,7 @@ def display_scanner_results():
                     results.drop(columns=["Priority"], inplace=True, errors='ignore')
                 else:
                     results = results.sort_values(by=sort_by, ascending=ascending)
-            sorted_results = results.head(max_results)
+                sorted_results = results.head(max_results)
 
             
             
