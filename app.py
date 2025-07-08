@@ -350,8 +350,8 @@ def display_scanner_results():
                     key=f"max_{scanner_name}"
                 )
             
-            
 
+    try:    
             # Custom sorting for MACD 1D and Range Breakout
             if ("1d" in scanner_name.lower() or "range breakout" in scanner_name.lower()):
                 signal_priority = ["Bullish Crossover", "Bullish Divergence"]
@@ -383,8 +383,8 @@ def display_scanner_results():
             with col2:
                 st.metric("Displayed", len(sorted_results))
                     
-            except Exception as e:
-                st.error(f"Error displaying {scanner_name} results: {e}")
+    except Exception as e:
+        st.error(f"Error displaying {scanner_name} results: {e}")
 
 def display_market_indices():
     """Display live market indices"""
