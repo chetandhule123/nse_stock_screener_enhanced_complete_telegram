@@ -351,7 +351,7 @@ def display_scanner_results():
                 # Apply priority sorting for selected scanners
                 priority_scanners = ["MACD 15min", "MACD 4h", "MACD 1d", "Range Breakout 4h"]
                 signal_priority = ["Bullish Crossover", "Bullish Divergence","Bullish MACD Crossover","Bullish Momentum Building"]
-                breakout_priority = ["Bullish Breakout", "Range Breakout", "Resistance Breakout", "Support Breakout"]
+                breakout_priority = ["Bullish Breakout", "Range Breakout", "Resistance Breakout", "Support Breakout","Bullish Range Breakout"]
 
                 if scanner_name in priority_scanners:
                     # Detect the signal column dynamically
