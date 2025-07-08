@@ -384,14 +384,14 @@ def display_scanner_results():
 
                 st.dataframe(sorted_results, use_container_width=True, hide_index=True)
 
-    col1, col2 = st.columns(2)
-    with col1:
-        st.metric("Total Signals", len(results))
-    with col2:
-        st.metric("Displayed", len(sorted_results))
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.metric("Total Signals", len(results))
+                with col2:
+                    st.metric("Displayed", len(sorted_results))
 
-except Exception as e:
-    st.error(f"Error displaying {scanner_name} results: {e}")
+            except Exception as e:
+                st.error(f"Error displaying {scanner_name} results: {e}")
 
 
 
