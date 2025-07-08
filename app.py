@@ -353,7 +353,9 @@ def display_scanner_results():
 
             try:    
             # Custom sorting for MACD 1D and Range Breakout
-                if ("1d" in scanner_name.lower() or "range breakout" in scanner_name.lower()):
+                #if ("1d" in scanner_name.lower() or "range breakout" in scanner_name.lower()):
+                if any(key in scanner_name.lower() for key in ["macd 15min", "macd 4h", "macd 1d", "range breakout"]):
+
                     signal_priority = ["Bullish Crossover", "Bullish Divergence"]
                     breakout_priority = ["Bullish Breakout", "Range Breakout", "Resistance Breakout", "Support Breakout"]
 
