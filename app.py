@@ -401,7 +401,8 @@ def display_scanner_results():
                     )
     
                     # Render full table with clickable Symbol column
-                    st.write(display_df.to_html(index=False, escape=False), unsafe_allow_html=True)
+                    st.markdown(display_df.to_html(index=False, escape=False), unsafe_allow_html=True)
+
 
                 else:
                     st.warning("No symbols to display.")
