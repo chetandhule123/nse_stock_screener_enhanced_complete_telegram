@@ -387,7 +387,18 @@ def display_scanner_results():
 
                 sorted_results = results.head(max_results)
 
-                st.dataframe(sorted_results, use_container_width=True, hide_index=True)
+                #st.dataframe(sorted_results, use_container_width=True, hide_index=True)
+                # Make Symbol column clickable with Telegram+TradingView link
+                symbol_col = next((col for col in sorted_results.columns if col.lower() == "symbol"), None)
+                if symbol_col:
+                    sorted_results = sorted_results.copy()
+                    sorted_results[symbol_col] = sorted_results[symbol_col].apply(lambda sym: f"[{sym}](https://t.me/share/url?url=https://www.tradingview.com/chart/?symbol=NSE:{sym})"
+                    if pd.notna(sym) else sym
+    )
+
+# Render as markdown table with clickable links
+                st.markdown(sorted_results.to_markdown(index=False), unsafe_allow_html=True)
+
 
                 col1, col2 = st.columns(2)
                 with col1:
