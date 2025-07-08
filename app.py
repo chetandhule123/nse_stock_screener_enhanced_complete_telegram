@@ -362,7 +362,7 @@ def display_scanner_results():
                 else:
                     results["Signal_Priority"] = len(signal_priority)
 
-                 if "Breakout_Type" in results.columns:
+                if "Breakout_Type" in results.columns:
                     results["Breakout_Priority"] = results["Breakout_Type"].apply(lambda x: breakout_priority.index(x) if x in breakout_priority else len(breakout_priority))
                 else:
                     results["Breakout_Priority"] = len(breakout_priority)
