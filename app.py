@@ -397,7 +397,9 @@ def display_scanner_results():
     )
 
 # Render as markdown table with clickable links
-                st.markdown(sorted_results.to_markdown(index=False), unsafe_allow_html=True)
+                #st.markdown(sorted_results.to_markdown(index=False), unsafe_allow_html=True)
+                st.write(sorted_results.to_html(index=False, escape=False), unsafe_allow_html=True)
+
 
 
                 col1, col2 = st.columns(2)
