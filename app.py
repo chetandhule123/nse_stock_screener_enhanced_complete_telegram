@@ -387,27 +387,34 @@ def display_scanner_results():
 
                 sorted_results = results.head(max_results)
 
-                # ✅ Make Symbol column clickable and show full table
+                
+                
+                
+
+
+                # ✅ Show table with plain Symbol and a separate Chart column
                 symbol_col = next((col for col in sorted_results.columns if col.lower() == "symbol"), None)
 
                 if symbol_col and not sorted_results.empty:
-                    # Copy to avoid modifying original
                     display_df = sorted_results.copy()
-    
-                    # Make symbol column clickable
-                    display_df[symbol_col] = display_df[symbol_col].apply(
-                        lambda sym: f"[{sym}](https://www.tradingview.com/chart/?symbol=NSE:{sym})"
-                        if pd.notna(sym) else ""
+
+                    # Create 'Chart' link column
+                    display_df["Chart"] = display_df[symbol_col].apply(
+                    lambda sym: f"<a href='https://www.tradingview.com/chart/?symbol=NSE:{sym}' target='_blank'>📈 Chart</a>"
+                    if pd.notna(sym) else ""
                     )
-    
-                    # Render full table with clickable Symbol column
+
+                    # Move 'Chart' column just after 'Symbol'
+                    cols = list(display_df.columns)
+                    cols.remove("Chart")
+                    insert_index = cols.index(symbol_col) + 1
+                    cols.insert(insert_index, "Chart")
+                    display_df = display_df[cols]
+
+                    # Render as HTML table with clickable Chart buttons
                     st.markdown(display_df.to_html(index=False, escape=False), unsafe_allow_html=True)
-
-
                 else:
                     st.warning("No symbols to display.")
-                
-
 
 
 
