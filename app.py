@@ -359,10 +359,19 @@ def display_scanner_results():
                     signal_priority = ["Bullish Crossover", "Bullish Divergence"]
                     breakout_priority = ["Bullish Breakout", "Range Breakout", "Resistance Breakout", "Support Breakout"]
 
-                    if "Signal_Type" in results.columns:
-                        results["Signal_Priority"] = results["Signal_Type"].apply(lambda x: signal_priority.index(x) if x in signal_priority else len(signal_priority))
-                    else:
-                        results["Signal_Priority"] = len(signal_priority)
+
+
+                    signal_col = None
+                    for col in results.columns:
+                        if col.lower() in ["signal_type", "signal"]:
+                            signal_col = col
+                            break
+
+                        if signal_col:
+                            results["Signal_Priority"] = results[signal_col].apply(lambda x: signal_priority.index(x) if x in signal_priority else len(signal_priority))
+                        else:
+                            results["Signal_Priority"] = len(signal_priority)
+
 
                     if "Breakout_Type" in results.columns:
                         results["Breakout_Priority"] = results["Breakout_Type"].apply(lambda x: breakout_priority.index(x) if x in breakout_priority else len(breakout_priority))
