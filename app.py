@@ -385,13 +385,7 @@ def display_scanner_results():
     
             
    
-                
-                # Display results
-                st.dataframe(
-                    sorted_results,
-                    use_container_width=True,
-                    hide_index=True
-                )
+     
                 
                 # Summary stats
                 col1, col2 = st.columns(2)
