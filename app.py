@@ -378,10 +378,10 @@ def display_scanner_results():
                 
                 # Summary stats
             col1, col2 = st.columns(2)
-                with col1:
-                    st.metric("Total Signals", len(results))
-                with col2:
-                    st.metric("Displayed", len(sorted_results))
+            with col1:
+                st.metric("Total Signals", len(results))
+            with col2:
+                st.metric("Displayed", len(sorted_results))
                     
             except Exception as e:
                 st.error(f"Error displaying {scanner_name} results: {e}")
