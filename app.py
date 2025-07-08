@@ -493,7 +493,7 @@ def send_telegram_notification(scan_results):
 
 
 
-
+        if "MACD" in scanner_name:
             if "1d" in scanner_name.lower():
                 label = "1D"
             elif "4h" in scanner_name.lower():
