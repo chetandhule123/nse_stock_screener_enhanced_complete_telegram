@@ -11,7 +11,7 @@ import pytz
 import logging
 import json
 import requests
-import streamlit.components.v1 as components
+import streamlit.components.v1 as components 
 
 # Import custom modules
 from scanners.macd_scanner import MACDScanner
