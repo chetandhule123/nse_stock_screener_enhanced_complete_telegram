@@ -389,16 +389,21 @@ def display_scanner_results():
 
                 #st.dataframe(sorted_results, use_container_width=True, hide_index=True)
                 # Make Symbol column clickable with Telegram+TradingView link
-                symbol_col = next((col for col in sorted_results.columns if col.lower() == "symbol"), None)
-                if symbol_col:
-                    sorted_results = sorted_results.copy()
-                    sorted_results[symbol_col] = sorted_results[symbol_col].apply(lambda sym: f"[{sym}](https://t.me/share/url?url=https://www.tradingview.com/chart/?symbol=NSE:{sym})"
-                    if pd.notna(sym) else sym
-    )
+                
+                # ✅ Display bullet-style clickable symbol list like Telegram format
+            symbol_col = next((col for col in sorted_results.columns if col.lower() == "symbol"), None)
 
-# Render as markdown table with clickable links
-                #st.markdown(sorted_results.to_markdown(index=False), unsafe_allow_html=True)
-                st.write(sorted_results.to_html(index=False, escape=False), unsafe_allow_html=True)
+            if symbol_col and not sorted_results.empty:
+                st.markdown("#### 📈 Signals:")
+                for _, row in sorted_results.iterrows():
+                    symbol = str(row[symbol_col]).strip().replace(".NS", "")
+                    if symbol and symbol.lower() != "nan":
+                        st.markdown(f"- [{symbol} 🔗](https://www.tradingview.com/chart/?symbol=NSE:{symbol})",unsafe_allow_html=True)
+                    else:
+                        st.warning("No symbols to display.")
+
+                
+     
 
 
 
