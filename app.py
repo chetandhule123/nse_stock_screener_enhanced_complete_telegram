@@ -375,20 +375,9 @@ def display_scanner_results():
 
 # Final row limit
             sorted_results = results.head(max_results)
-
-
-
-
-
-
-            
-    
-            
-   
-     
                 
                 # Summary stats
-                col1, col2 = st.columns(2)
+            col1, col2 = st.columns(2)
                 with col1:
                     st.metric("Total Signals", len(results))
                 with col2:
