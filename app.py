@@ -351,6 +351,52 @@ def display_scanner_results():
                 )
             
 
+            try:
+    # Priority scanners
+                priority_scanners = ["MACD 15min", "MACD 4h", "MACD 1d", "Range Breakout 4h"]
+                if scanner_name in priority_scanners:
+                    signal_priority = ["Bullish Crossover", "Bullish Divergence"]
+                    breakout_priority = ["Bullish Breakout", "Range Breakout", "Resistance Breakout", "Support Breakout"]
+
+        # Detect signal column
+                    signal_col = None
+                    for col in results.columns:
+                        if col.lower() in ["signal_type", "signal"]:
+                            signal_col = col
+                            break
+
+                    if signal_col:
+                        results["Signal_Priority"] = results[signal_col].apply( lambda x: signal_priority.index(x) if x in signal_priority else len(signal_priority))
+                    else:
+                        results["Signal_Priority"] = len(signal_priority)
+
+                    if "Breakout_Type" in results.columns:
+                        results["Breakout_Priority"] = results["Breakout_Type"].apply(lambda x: breakout_priority.index(x) if x in breakout_priority else len(breakout_priority))
+                    else:
+                        results["Breakout_Priority"] = len(breakout_priority)
+
+                    results = results.sort_values(by=["Signal_Priority", "Breakout_Priority", sort_by],ascending=[True, True, ascending])
+                    results.drop(columns=["Signal_Priority", "Breakout_Priority"], inplace=True, errors='ignore')
+                else:
+                    results = results.sort_values(by=sort_by, ascending=ascending)
+
+                sorted_results = results.head(max_results)
+
+                st.dataframe(sorted_results, use_container_width=True, hide_index=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Total Signals", len(results))
+    with col2:
+        st.metric("Displayed", len(sorted_results))
+
+except Exception as e:
+    st.error(f"Error displaying {scanner_name} results: {e}")
+
+
+
+
+
             try:    
             # Custom sorting for MACD 1D and Range Breakout
                 #if ("1d" in scanner_name.lower() or "range breakout" in scanner_name.lower()):
