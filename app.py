@@ -430,7 +430,7 @@ def display_market_indices():
         st.error(f"⚠️ Error fetching market indices: {str(e)}")
 
 def send_telegram_notification(scan_results):
-    """Send filtered priority scanner results to Telegram"""
+    """Send filtered scanner results to Telegram"""
     try:
         if "BOT_TOKEN" not in st.secrets or "CHAT_ID" not in st.secrets:
             logger.warning("Telegram credentials not configured in secrets")
@@ -445,11 +445,6 @@ def send_telegram_notification(scan_results):
 
         now = get_ist_time().strftime('%d %b %Y, %I:%M %p IST')
         message = f"📊 *Market Scanner Report*\n🕒 *Scanned at:* {now}\n"
-
-        # Priorities
-        priority_scanners = ["MACD 15min", "MACD 4h", "MACD 1d", "Range Breakout 4h"]
-        signal_priority = ["Bullish Crossover", "Bullish Divergence"]
-        breakout_priority = ["Bullish Breakout", "Range Breakout", "Resistance Breakout", "Support Breakout"]
 
         def format_section(title, df):
             symbol_col = next((col for col in df.columns if col.lower() == "symbol"), None)
@@ -476,37 +471,46 @@ def send_telegram_notification(scan_results):
         all_buttons = []
 
         for scanner_name, df in scan_results.items():
-            if scanner_name not in priority_scanners:
-                continue
             if not isinstance(df, pd.DataFrame) or df.empty:
                 continue
 
-            # Filter signals
-            signal_col = next((col for col in df.columns if col.lower() in ["signal_type", "signal"]), None)
-            if signal_col:
-                df = df[df[signal_col].astype(str).str.strip().isin(signal_priority)]
-            if "Breakout_Type" in df.columns:
-                df = df[df["Breakout_Type"].astype(str).str.strip().isin(breakout_priority)]
+            label = scanner_name
+            filtered_df = df.copy()
 
-            if df.empty:
+            # 🟢 MACD 4H: Only Bullish Crossover
+            if scanner_name == "MACD 4h":
+                signal_col = next((col for col in df.columns if col.lower() in ["signal_type", "signal"]), None)
+                if signal_col:
+                    filtered_df = df[df[signal_col].astype(str).str.strip() == "Bullish Crossover"]
+                label = "MACD 4H Bullish Crossover"
+
+            # 🟢 MACD 1D: Only Bullish MACD Crossover
+            elif scanner_name == "MACD 1d":
+                signal_col = next((col for col in df.columns if col.lower() in ["signal_type", "signal"]), None)
+                if signal_col:
+                    filtered_df = df[df[signal_col].astype(str).str.strip() == "Bullish MACD Crossover"]
+                label = "MACD 1D Bullish Crossover"
+
+            # 🟢 Range Breakout 4h: All
+            elif scanner_name == "Range Breakout 4h":
+                label = "Range Breakout 4H"
+
+            # 🟢 Resistance Breakout 4h: All
+            elif scanner_name == "Resistance Breakout 4h":
+                label = "Resistance Breakout 4H"
+
+            # 🟢 Support Level 4h: All
+            elif scanner_name == "Support Level 4h":
+                label = "Support Level 4H"
+
+            # ❌ Skip all others (like MACD 15min)
+            else:
                 continue
 
-            # Label formatting
-            if "macd" in scanner_name.lower():
-                if "1d" in scanner_name.lower():
-                    label = "MACD 1D"
-                elif "4h" in scanner_name.lower():
-                    label = "MACD 4H"
-                elif "15" in scanner_name.lower():
-                    label = "MACD 15M"
-                else:
-                    label = scanner_name
-            elif "range breakout" in scanner_name.lower():
-                label = "Range Breakout 4H"
-            else:
-                label = scanner_name
+            if filtered_df.empty:
+                continue
 
-            sec, btns = format_section(label, df)
+            sec, btns = format_section(label, filtered_df)
             if sec:
                 sections.append(sec)
                 all_buttons.extend(btns)
@@ -514,7 +518,7 @@ def send_telegram_notification(scan_results):
         if sections:
             message += "\n".join(sections)
         else:
-            message += "\n_No priority bullish signals found._"
+            message += "\n_No matching signals found._"
 
         payload = {
             "chat_id": CHAT_ID,
@@ -545,7 +549,6 @@ def send_telegram_notification(scan_results):
     except Exception as e:
         logger.error(f"Failed to send Telegram notification: {e}")
         return False
-
 
 
 def export_all_results():
