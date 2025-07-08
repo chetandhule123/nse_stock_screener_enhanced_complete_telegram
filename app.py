@@ -351,19 +351,34 @@ def display_scanner_results():
                 )
             
             
-            try:
-                if "Signal_Type" in results.columns:
-                    priority = ["Bullish Crossover", "Bullish Divergence"]
-                    results["Priority"] = results["Signal_Type"].apply(lambda x: priority.index(x) if x in priority else len(priority))
-                    results = results.sort_values(by=["Priority", sort_by], ascending=[True, ascending])
-                    results.drop(columns=["Priority"], inplace=True, errors='ignore')
-                else:
-                    results = results.sort_values(by=sort_by, ascending=ascending)
-                sorted_results = results.head(max_results)
 
             
             
-            
+            try:
+    # Define priorities
+                signal_priority = ["Bullish Crossover", "Bullish Divergence"]
+                breakout_priority = ["Bullish Breakout", "Range Breakout", "Resistance Breakout", "Support Breakout"]
+
+    # Assign priorities
+                if "Signal_Type" in results.columns:
+                    results["Signal_Priority"] = results["Signal_Type"].apply(lambda x: signal_priority.index(x) if x in signal_priority else len(signal_priority))
+                else:
+                    results["Signal_Priority"] = len(signal_priority)
+
+                if "Breakout_Type" in results.columns:
+                    results["Breakout_Priority"] = results["Breakout_Type"].apply(lambda x: breakout_priority.index(x) if x in breakout_priority else len(breakout_priority))
+                else:
+                    results["Breakout_Priority"] = len(breakout_priority)
+
+    # Combine sorting logic
+                results = results.sort_values(by=["Signal_Priority", "Breakout_Priority", sort_by],ascending=[True, True, ascending])
+
+    # Drop priority columns
+                results.drop(columns=["Signal_Priority", "Breakout_Priority"], inplace=True, errors='ignore')
+
+    # Limit rows
+                sorted_results = results.head(max_results)
+
             
    
                 
