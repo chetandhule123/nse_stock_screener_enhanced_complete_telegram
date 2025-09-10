@@ -30,7 +30,7 @@ class DataFetcher:
         
         # NSE stock symbols
         self.nse_stocks = [
-            "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "BHARTIARTL.NS", "ICICIBANK.NS",
+            "BTC-USD","RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "BHARTIARTL.NS", "ICICIBANK.NS",
             "INFOSYS.NS", "SBIN.NS", "LICI.NS", "ITC.NS", "HINDUNILVR.NS",
             "LT.NS", "KOTAKBANK.NS", "HCLTECH.NS", "MARUTI.NS", "SUNPHARMA.NS",
             "TITAN.NS", "ONGC.NS", "NTPC.NS", "ASIANPAINT.NS", "M&M.NS",
